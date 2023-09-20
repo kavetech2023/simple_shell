@@ -1,42 +1,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
-#define MAX_LINE_LENGTH 1024
+#define MAX_INPUT_LENGTH 100
 
 int main() {
-  char line[MAX_LINE_LENGTH];
+    char input[MAX_INPUT_LENGTH];
 
-  // Print the prompt.
-  printf("$ ");
+    while (1) {
+        printf("simple_shell> "); // Display the prompt
+        if (fgets(input, sizeof(input), stdin) == NULL) {
+            printf("\n"); // Handle end of file (Ctrl+D)
+            break;
+        }
 
-  // Read the user input.
-  fgets(line, MAX_LINE_LENGTH, stdin);
+        // Remove the trailing newline character
+        input[strlen(input) - 1] = '\0';
 
-  // Parse the command.
-  char *argv[MAX_LINE_LENGTH];
-  int argc = 0;
-  char *token = strtok(line, " ");
-  while (token != NULL) {
-    argv[argc] = token;
-    argc++;
-    token = strtok(NULL, " ");
-  }
+        // Execute the command using the system function
+        int result = system(input);
 
-  // Execute the command.
-  int pid = fork();
-  if (pid == 0) {
-    // Child process.
-    execvp(argv[0], argv);
-    exit(1);
-  } else {
-    // Parent process.
-    waitpid(pid, NULL, 0);
-  }
+        if (result == -1) {
+            perror("system"); // Handle execution error
+        } else {
+            if (WIFEXITED(result)) {
+                if (WEXITSTATUS(result) != 0) {
+                    fprintf(stderr, "Error: Command not found or failed\n");
+                }
+            } else {
+                fprintf(stderr, "Error: Command did not terminate normally\n");
+            }
+        }
+    }
 
-  // Print the prompt again.
-  printf("$ ");
-
-  return 0;
+    return 0;
 }
+
