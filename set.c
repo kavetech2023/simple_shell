@@ -1,37 +1,45 @@
 #include "shell.h"
 
 /**
- * non_interactive - handles non_interactive mode
+ * handleNonInteractiveMode - Handles non-interactive mode of the shell.
  *
- * Return: void
+ * Return: None.
  */
-void non_interactive(void)
-{
-char **current_command = NULL;
-int i, type_command = 0;
-size_t n = 0;
-if (!(isatty(STDIN_FILENO)))
-{
-while (getline(&line, &n, stdin) != -1)
-{
-remove_newline(line);
-remove_comment(line);
-commands = tokenizer(line, ";");
-for (i = 0; commands[i] != NULL; i++)
-{
-current_command = tokenizer(commands[i], " ");
-if (current_command[0] == NULL)
-{
-free(current_command);
-break;
+void handleNonInteractiveMode(void) {
+    char **currentCommand = NULL;
+    int i, commandType = 0;
+    size_t bufferSize = 0;
+
+    // Check if the input is not coming from a terminal
+    if (!(isatty(STDIN_FILENO))) {
+        while (getline(&line, &bufferSize, stdin) != -1) {
+            // Remove newline and ignore comments
+            removeNewlineCharacter(line);
+            removeComment(line);
+
+            // Tokenize input into separate commands
+            commands = tokenizeInput(line, ";");
+
+            for (i = 0; commands[i] != NULL; i++) {
+                currentCommand = tokenizeInput(commands[i], " ");
+
+                if (currentCommand[0] == NULL) {
+                    free(currentCommand);
+                    break;
+                }
+
+                // Parse the command and execute it
+                commandType = parseCommand(currentCommand[0]);
+                executeCommand(currentCommand, commandType);
+
+                free(currentCommand);
+            }
+
+            free(commands);
+        }
+
+        free(line);
+        exit(status);
+    }
 }
-type_command = parse_command(current_command[0]);
-initializer(current_command, type_command);
-free(current_command);
-}
-free(commands);
-}
-free(line);
-exit(status);
-}
-}
+

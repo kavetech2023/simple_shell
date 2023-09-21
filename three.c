@@ -1,132 +1,130 @@
 #include "shell.h"
 
 /**
- * _strtok_r - tokenizes a string
- * @string: string to be tokenized
- * @delim: delimiter to be used to tokenize the string
- * @save_ptr: pointer to be used to keep track of the next token
+ * customStrtok - Tokenizes a string.
+ * @inputString: The string to be tokenized.
+ * @delimiter: The delimiter used to tokenize the string.
+ * @savePtr: A pointer to keep track of the next token.
  *
- * Return: The next available token
+ * Return: The next available token.
  */
+char *customStrtok(char *inputString, char *delimiter, char **savePtr) {
+    char *tokenEnd;
 
-char *_strtok_r(char *string, char *delim, char **save_ptr)
-{
-char *finish;
-if (string == NULL)
-string = *save_ptr;
-if (*string == '\0')
-{
-*save_ptr = string;
-return (NULL);
-}
-string += _strspn(string, delim);
-if (*string == '\0')
-{
-*save_ptr = string;
-return (NULL);
-}
-finish = string + _strcspn(string, delim);
-if (*finish == '\0')
-{
-*save_ptr = finish;
-return (string);
-}
-*finish = '\0';
-*save_ptr = finish + 1;
-return (string);
+    // If inputString is NULL, continue from where we left off
+    if (inputString == NULL) {
+        inputString = *savePtr;
+    }
+
+    // Skip leading delimiters
+    inputString += customStrspn(inputString, delimiter);
+
+    // If the current position is at the end of the string, return NULL
+    if (*inputString == '\0') {
+        *savePtr = inputString;
+        return NULL;
+    }
+
+    // Find the end of the token
+    tokenEnd = inputString + customStrcspn(inputString, delimiter);
+
+    // If we reached the end of the string, return the current token
+    if (*tokenEnd == '\0') {
+        *savePtr = tokenEnd;
+        return inputString;
+    }
+
+    // Null-terminate the token and update savePtr to point to the next character
+    *tokenEnd = '\0';
+    *savePtr = tokenEnd + 1;
+
+    return inputString;
 }
 
 /**
- * _atoi - changes a string to an integer
- * @s: the string to be changed
+ * customAtoi - Converts a string to an integer.
+ * @s: The string to be converted.
  *
- * Return: the converted int
+ * Return: The converted integer.
  */
-int _atoi(char *s)
-{
-unsigned int n = 0;
-do {
-if (*s == '-')
-return (-1);
-else if ((*s < '0' || *s > '9') && *s != '\0')
-return (-1);
-else if (*s >= '0'  && *s <= '9')
-n = (n * 10) + (*s - '0');
-else if (n > 0)
-break;
-} while (*s++);
-return (n);
+int customAtoi(char *s) {
+    unsigned int result = 0;
+    int isNegative = 0;
+
+    // Check for negative sign
+    if (*s == '-') {
+        isNegative = 1;
+        s++;
+    }
+
+    while (*s >= '0' && *s <= '9') {
+        result = result * 10 + (*s - '0');
+        s++;
+    }
+
+    return isNegative ? -result : result;
 }
 
 /**
- * _realloc - reallocates a memory block
- * @ptr: pointer to the memory previously allocated with a call to malloc
- * @old_size: size of ptr
- * @new_size: size of the new memory to be allocated
+ * customRealloc - Reallocates memory.
+ * @ptr: A pointer to the memory block to be reallocated.
+ * @oldSize: The current size of the memory block.
+ * @newSize: The new size of the memory block.
  *
- * Return: pointer to the address of the new memory block
+ * Return: A pointer to the new memory block.
  */
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
-{
-void *temp_block;
-unsigned int i;
-if (ptr == NULL)
-{
-temp_block = malloc(new_size);
-return (temp_block);
-}
-else if (new_size == old_size)
-return (ptr);
-else if (new_size == 0 && ptr != NULL)
-{
-free(ptr);
-return (NULL);
-}
-else
-{
-temp_block = malloc(new_size);
-if (temp_block != NULL)
-{
-for (i = 0; i < min(old_size, new_size); i++)
-*((char *)temp_block + i) = *((char *)ptr + i);
-free(ptr);
-return (temp_block);
-}
-else
-return (NULL);
-}
+void *customRealloc(void *ptr, unsigned int oldSize, unsigned int newSize) {
+    void *newBlock;
+    unsigned int i;
+
+    // Allocate new memory
+    newBlock = malloc(newSize);
+
+    // Copy data from the old block to the new block
+    if (newBlock != NULL) {
+        for (i = 0; i < customMin(oldSize, newSize); i++) {
+            *((char *)newBlock + i) = *((char *)ptr + i);
+        }
+        free(ptr);
+        return newBlock;
+    } else {
+        return NULL;
+    }
 }
 
 /**
- * ctrl_c_handler - handles the signal raised by CTRL-C
- * @signum: signal number
+ * handleCtrlC - Handles the SIGINT signal (e.g., CTRL-C).
+ * @signalNumber: The signal number.
  *
- * Return: void
+ * Return: None.
  */
-
-void ctrl_c_handler(int signum)
-{
-if (signum == SIGINT)
-print("\n($) ", STDIN_FILENO);
+void handleCtrlC(int signalNumber) {
+    if (signalNumber == SIGINT) {
+        printString("\n($) ", STDIN_FILENO);
+    }
 }
 
 /**
- * remove_comment - removes/ignores everything after a '#' char
- * @input: input to be used
+ * removeComments - Removes everything after a '#' character in a string.
+ * @input: The input string.
  *
- * Return: void
+ * Return: None.
  */
+void removeComments(char *input) {
+    int i = 0;
 
-void remove_comment(char *input)
-{
-int i = 0;
-if (input[i] == '#')
-input[i] = '\0';
-while (input[i] != '\0')
-{
-if (input[i] == '#' && input[i - 1] == ' ')
-break;
-i++;
+    // Remove the '#' character and everything after it
+    if (input[i] == '#') {
+        input[i] = '\0';
+    }
+
+    // Search for a '#' character after a space and remove it
+    while (input[i] != '\0') {
+        if (input[i] == '#' && input[i - 1] == ' ') {
+            break;
+        }
+        i++;
+    }
+    input[i] = '\0';
 }
-input[i] = '\0';
-}
+

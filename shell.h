@@ -1,79 +1,67 @@
 #ifndef SHELL_H
 #define SHELL_H
 
+// Include necessary libraries
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <errno.h>
-#include <dirent.h>
-#include <signal.h>
 
-
-/*constants*/
+// Constants to represent different types of commands
 #define EXTERNAL_COMMAND 1
 #define INTERNAL_COMMAND 2
 #define PATH_COMMAND 3
 #define INVALID_COMMAND -1
 
-#define min(x, y) (((x) < (y)) ? (x) : (y))
+// Function prototype for a simple command mapper
+typedef struct {
+    char *command_name;
+    void (*func)(char **command);
+} CommandMapper;
 
-/**
- * struct map - a struct that maps a command name to a function
- *
- * @command_name: name of the command
- * @func: the function that executes the command
- */
+// Global variables
+extern char **environ;       // Environment variables
+extern char *line;           // User input
+extern char **commands;      // Parsed commands
+extern char *shell_name;     // Name of the shell
+extern int status;           // Command execution status
 
-typedef struct map
-{
-	char *command_name;
-	void (*func)(char **command);
-} function_map;
+// Function prototypes for helper functions
+void printMessage(char *message, int length);
+char **tokenizeString(char *input, char *delimiter);
+void removeNewline(char *text);
+int stringLength(char *text);
+void copyString(char *destination, char *source);
 
-extern char **environ;
-extern char *line;
-extern char **commands;
-extern char *shell_name;
-extern int status;
+// More function prototypes for helper functions
+int compareStrings(char *string1, char *string2);
+char *concatenateStrings(char *string1, char *string2);
+int findStringLengthInCharset(char *text, char *charset);
+int findStringLengthNotInCharset(char *text, char *charset);
+char *findCharacterInString(char *text, char character);
 
-/*helpers*/
-void print(char *, int);
-char **tokenizer(char *, char *);
-void remove_newline(char *);
-int _strlen(char *);
-void _strcpy(char *, char *);
+// More function prototypes for helper functions
+char *tokenizeStringWithSave(char *input, char *delimiter, char **saveptr);
+int convertStringToInt(char *text);
+void *resizeMemoryBlock(void *ptr, unsigned int oldSize, unsigned int newSize);
+void handleCtrlC(int signal);
+void removeComments(char *text);
 
-/*helpers2*/
-int _strcmp(char *, char *);
-char *_strcat(char *, char *);
-int _strspn(char *, char *);
-int _strcspn(char *, char *);
-char *_strchr(char *, char);
+// Function prototypes for utility functions
+int parseUserInput(char *input);
+void executeParsedCommand(char **command, int commandType);
+char *findExecutablePath(char *commandName);
+void (*findCommandFunction(char *commandName))(char **);
+char *getEnvironmentVariable(char *variableName);
 
-/*helpers3*/
-char *_strtok_r(char *, char *, char **);
-int _atoi(char *);
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
-void ctrl_c_handler(int);
-void remove_comment(char *);
+// Function prototypes for built-in shell commands
+void displayEnvironmentVariables(char **arguments);
+void exitShell(char **arguments);
 
-/*utils*/
-int parse_command(char *);
-void execute_command(char **, int);
-char *check_path(char *);
-void (*get_func(char *))(char **);
-char *_getenv(char *);
+// Main function for non-interactive mode
+extern void runNonInteractiveMode(void);
 
-/*built_in*/
-void env(char **);
-void quit(char **);
+// Initialization function
+extern void initializeShell(char **currentCommand, int commandType);
 
-/*main*/
-extern void non_interactive(void);
-extern void initializer(char **current_command, int type_command);
+#endif /* SHELL_H */
 
-#endif /*SHELL_H*/
