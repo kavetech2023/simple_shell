@@ -1,3 +1,5 @@
+Shell.h
+
 #ifndef SHELL_H
 #define SHELL_H
 
@@ -12,66 +14,68 @@
 #include <dirent.h>
 #include <signal.h>
 
-/* Constants */
+
+/*constants*/
 #define EXTERNAL_COMMAND 1
 #define INTERNAL_COMMAND 2
 #define PATH_COMMAND 3
 #define INVALID_COMMAND -1
 
-#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+#define min(x, y) (((x) < (y)) ? (x) : (y))
 
 /**
- * Struct map - Maps a command name to a function.
+ * struct map - a struct that maps a command name to a function
  *
- * @command_name: Name of the command
- * @func: The function that executes the command
+ * @command_name: name of the command
+ * @func: the function that executes the command
  */
-typedef struct map {
-    char *command_name;
-    void (*func)(char **command);
-} FunctionMap;
 
-/* Global variables */
+typedef struct map
+{
+	char *command_name;
+	void (*func)(char **command);
+} function_map;
+
 extern char **environ;
 extern char *line;
 extern char **commands;
 extern char *shell_name;
 extern int status;
 
-/* Assistive functions */
-void print(char *message, int file_descriptor);
-char **tokenizer(char *input, char *delimiter);
-void remove_newline(char *str);
-int string_length(char *str);
-void string_copy(char *dest, char *src);
+/*helpers*/
+void print(char *, int);
+char **tokenizer(char *, char *);
+void remove_newline(char *);
+int _strlen(char *);
+void _strcpy(char *, char *);
 
-/* Assistive functions*/
-int string_compare(const char *str1, const char *str2);
-char *string_concat(char *str1, char *str2);
-int string_span(char *str, const char *delimiters);
-int string_cspan(char *str, const char *reject);
-char *string_find(char *str, char target);
+/*helpers2*/
+int _strcmp(char *, char *);
+char *_strcat(char *, char *);
+int _strspn(char *, char *);
+int _strcspn(char *, char *);
+char *_strchr(char *, char);
 
-/* Assistive functions */
-char *string_token(char *str, const char *delimiters, char **saveptr);
-int string_to_integer(const char *str);
-void *reallocate_memory(void *ptr, size_t old_size, size_t new_size);
-void ctrl_c_handler(int signal);
-void remove_comment(char *input);
+/*helpers3*/
+char *_strtok_r(char *, char *, char **);
+int _atoi(char *);
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+void ctrl_c_handler(int);
+void remove_comment(char *);
 
-/* Utility functions */
-int parse_command(char *input);
-void execute_command(char **command, int type);
-char *get_command_path(char *command_name);
-void (*get_builtin_func(char *command_name))(char **);
-char *get_environment_variable(char *name);
+/*utils*/
+int parse_command(char *);
+void execute_command(char **, int);
+char *check_path(char *);
+void (*get_func(char *))(char **);
+char *_getenv(char *);
 
-/* Built-in functions */
-void custom_env(char **command);
-void custom_quit(char **command);
+/*built_in*/
+void env(char **);
+void quit(char **);
 
-/* Main functions */
-extern void non_interactive_mode(void);
-extern void initialize_shell(char **current_command, int command_type);
+/*main*/
+extern void non_interactive(void);
+extern void initializer(char **current_command, int type_command);
 
-#endif /* SHELL_H */i
+#endif /*SHELL_H*/
