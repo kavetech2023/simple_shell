@@ -55,4 +55,3 @@ exit(arg);
 else
 print("$: exit doesn't take more than one argument\n", STDERR_FILENO);
 }
-
