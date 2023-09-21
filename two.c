@@ -1,94 +1,91 @@
 #include "shell.h"
-
 /**
- * compareStrings - Compares two strings character by character.
- * @firstString: The first string to compare.
- * @secondString: The second string to compare.
+ * _strcmp - compare two strings
+ * @first: first string to be compared
+ * @second: second string to be compared
  *
- * Return: The difference between the ASCII values of the first differing characters.
+ * Return: difference of the two strings
  */
-int compareStrings(char *firstString, char *secondString) {
-    int i = 0;
-
-    // Compare characters until a difference is found or one string ends
-    while (firstString[i] != '\0') {
-        if (firstString[i] != secondString[i]) {
-            break;
-        }
-        i++;
-    }
-
-    return firstString[i] - secondString[i];
+int _strcmp(char *first, char *second)
+{
+int i = 0;
+while (first[i] != '\0')
+{
+if (first[i] != second[i])
+break;
+i++;
 }
-
+return (first[i] - second[i]);
+}
 /**
- * concatenateStrings - Concatenates two strings into a new one.
- * @destination: The string to concatenate to.
- * @source: The string to concatenate.
+ * _strcat - concatenates two strings
+ * @destination: string to be concatenated to
+ * @source:  string to concatenate
  *
- * Return: The address of the newly created string.
+ * Return: address of the new string
  */
-char *concatenateStrings(char *destination, char *source) {
-    char *newString = NULL;
-    int lengthDestination = getStringLength(destination);
-    int lengthSource = getStringLength(source);
-
-    // Allocate memory for the new string
-    newString = malloc(sizeof(*newString) * (lengthDestination + lengthSource + 1));
-
-    // Copy the content of the destination and source strings into the new string
-    copyString(destination, newString);
-    copyString(source, newString + lengthDestination);
-
-    // Add null terminator to the end of the new string
-    newString[lengthDestination + lengthSource] = '\0';
-
-    return newString;
+char *_strcat(char *destination, char *source)
+{
+char *new_string =  NULL;
+int len_dest = _strlen(destination);
+int len_source = _strlen(source);
+new_string = malloc(sizeof(*new_string) * (len_dest + len_source + 1));
+_strcpy(destination, new_string);
+_strcpy(source, new_string + len_dest);
+new_string[len_dest + len_source] = '\0';
+return (new_string);
 }
-
 /**
- * getCommonPrefixLength - Calculates the length of the common prefix of two strings.
- * @string1: The first string.
- * @string2: The second string.
+ * _strspn - gets the length of a prefix substring
+ * @str1: string to be searched
+ * @str2: string to be used
  *
- * Return: The length of the common prefix.
+ * Return: number of bytes in the initial segment of 5 which are part of accept
  */
-int getCommonPrefixLength(char *string1, char *string2) {
-    int length = 0;
-    int i = 0;
-
-    // Compare characters until a difference is found or one string ends
-    for (i = 0; string1[i] != '\0'; i++) {
-        if (string1[i] != string2[i]) {
-            break;
-        }
-        length++;
-    }
-
-    return length;
+int _strspn(char *str1, char *str2)
+{
+int i = 0;
+int match = 0;
+while (str1[i] != '\0')
+{
+if (_strchr(str2, str1[i]) == NULL)
+break;
+match++;
+i++;
 }
-
+return (match);
+}
 /**
- * findCharacterInString - Searches for a character in a string.
- * @string: The string to search.
- * @character: The character to find.
+ * _strcspn - computes segment of str1 which consists of characters not in str2
+ * @str1: string to be searched
+ * @str2: string to be used
  *
- * Return: A pointer to the first occurrence of the character in the string, or NULL if not found.
+ * Return: index at which a char in str1 exists in str2
  */
-char *findCharacterInString(char *string, char character) {
-    int i = 0;
-
-    // Iterate through the string to find the character
-    for (; string[i] != character && string[i] != '\0'; i++) {
-        // No need to do anything here; we are just advancing the loop
-    }
-
-    if (string[i] == character) {
-        // Return a pointer to the found character
-        return (string + i);
-    } else {
-        // Character not found
-        return NULL;
-    }
+int _strcspn(char *str1, char *str2)
+{
+int len = 0, i;
+for (i = 0; str1[i] != '\0'; i++)
+{
+if (_strchr(str2, str1[i]) != NULL)
+break;
+len++;
 }
-
+return (len);
+}
+/**
+ * _strchr - locates a char in a string
+ * @s: string to be searched
+ * @c: char to be checked
+ *
+ * Return: pointer to the first occurence of c in s
+ */
+char *_strchr(char *s, char c)
+{
+int i = 0;
+for (; s[i] != c && s[i] != '\0'; i++);
+if (s[i] == c)
+return (s + i);
+else
+return (NULL);
+}

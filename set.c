@@ -1,45 +1,26 @@
 #include "shell.h"
 
 /**
- * handleNonInteractiveMode - Handles non-interactive mode of the shell.
+ * initializer - starts executing everything
+ * @current_command: try to check current token
+ * @type_command: parse token
  *
- * Return: None.
+ * Return: void function
  */
-void handleNonInteractiveMode(void) {
-    char **currentCommand = NULL;
-    int i, commandType = 0;
-    size_t bufferSize = 0;
-
-    // Check if the input is not coming from a terminal
-    if (!(isatty(STDIN_FILENO))) {
-        while (getline(&line, &bufferSize, stdin) != -1) {
-            // Remove newline and ignore comments
-            removeNewlineCharacter(line);
-            removeComment(line);
-
-            // Tokenize input into separate commands
-            commands = tokenizeInput(line, ";");
-
-            for (i = 0; commands[i] != NULL; i++) {
-                currentCommand = tokenizeInput(commands[i], " ");
-
-                if (currentCommand[0] == NULL) {
-                    free(currentCommand);
-                    break;
-                }
-
-                // Parse the command and execute it
-                commandType = parseCommand(currentCommand[0]);
-                executeCommand(currentCommand, commandType);
-
-                free(currentCommand);
-            }
-
-            free(commands);
-        }
-
-        free(line);
-        exit(status);
-    }
+void initializer(char **current_command, int type_command)
+{
+pid_t PID;
+if (type_command == EXTERNAL_COMMAND || type_command == PATH_COMMAND)
+{
+PID = fork();
+if (PID == 0)
+execute_command(current_command, type_command);
+else
+{
+waitpid(PID, &status, 0);
+status >>= 8;
 }
-
+}
+else
+execute_command(current_command, type_command);
+}

@@ -1,102 +1,89 @@
 #include "shell.h"
-
 /**
- * tokenizeInput - Tokenizes input and stores it in an array.
- * @inputString: The input to be parsed.
- * @delimiter: The delimiter used for tokenization (a single character).
+ * tokenizer - tokenizes input and stores it into an array
+ * @input_string: input to be parsed
+ * @delim: delimiter to be used, needs to be one character string
  *
- * Return: An array of tokens.
+ * Return: array of tokens
  */
-char **tokenizeInput(char *inputString, char *delimiter) {
-    int numTokens = 0;
-    char **tokensArray = NULL;
-    char *token = NULL;
-    char *savePtr = NULL;
+char **tokenizer(char *input_string, char *delim)
+{
+int num_delim = 0;
+char **av = NULL;
+char *token = NULL;
+char *save_ptr = NULL;
+token = _strtok_r(input_string, delim, &save_ptr);
+while (token != NULL)
+{
+av = _realloc(av, sizeof(*av) * num_delim, sizeof(*av) * (num_delim + 1));
+av[num_delim] = token;
+token = _strtok_r(NULL, delim, &save_ptr);
+num_delim++;
+}
+av = _realloc(av, sizeof(*av) * num_delim, sizeof(*av) * (num_delim + 1));
+av[num_delim] = NULL;
+return (av);
+}
+/**
+ * print - prints a string to stdout
+ * @string: string to be printed
+ * @stream: stream to print out to
+ *
+ * Return: void, return nothing
+ */
 
-    // Use strtok_r to split the inputString into tokens
-    token = _strtok_r(inputString, delimiter, &savePtr);
-
-    while (token != NULL) {
-        // Resize the tokens array to accommodate the new token
-        tokensArray = _realloc(tokensArray, sizeof(*tokensArray) * numTokens, sizeof(*tokensArray) * (numTokens + 1));
-        tokensArray[numTokens] = token;
-
-        // Get the next token
-        token = _strtok_r(NULL, delimiter, &savePtr);
-        numTokens++;
-    }
-
-    // Add a NULL pointer at the end to indicate the end of the array
-    tokensArray = _realloc(tokensArray, sizeof(*tokensArray) * numTokens, sizeof(*tokensArray) * (numTokens + 1));
-    tokensArray[numTokens] = NULL;
-
-    return tokensArray;
+void print(char *string, int stream)
+{
+int i = 0;
+for (; string[i] != '\0'; i++)
+write(stream, &string[i], 1);
 }
 
 /**
- * printString - Prints a string to the standard output.
- * @string: The string to be printed.
- * @outputStream: The output stream to print to (e.g., STDOUT).
+ * remove_newline - removes new line from a string
+ * @str: string to be used
  *
- * Return: None.
+ * Return: void
  */
-void printString(char *string, int outputStream) {
-    int i = 0;
-    while (string[i] != '\0') {
-        // Write each character of the string to the specified output stream
-        write(outputStream, &string[i], 1);
-        i++;
-    }
+void remove_newline(char *str)
+{
+int i = 0;
+while (str[i] != '\0')
+{
+if (str[i] == '\n')
+break;
+i++;
+}
+str[i] = '\0';
 }
 
 /**
- * removeNewlineCharacter - Removes newline character from a string.
- * @str: The string to be processed.
+ * _strcpy - copies a string to another buffer
+ * @source: source to copy from
+ * @dest: destination to copy to
  *
- * Return: None.
+ * Return: void
  */
-void removeNewlineCharacter(char *str) {
-    int i = 0;
-    while (str[i] != '\0') {
-        if (str[i] == '\n') {
-            // Replace newline character with null terminator
-            str[i] = '\0';
-            break;
-        }
-        i++;
-    }
+
+void _strcpy(char *source, char *dest)
+{
+int i = 0;
+for (; source[i] != '\0'; i++)
+dest[i] = source[i];
+dest[i] = '\0';
 }
 
 /**
- * copyString - Copies a string from source to destination.
- * @source: The source string to be copied.
- * @destination: The destination buffer to copy to.
+ * _strlen - counts string length
+ * @string: string to be counted
  *
- * Return: None.
+ * Return: length of the string
  */
-void copyString(char *source, char *destination) {
-    int i = 0;
-    while (source[i] != '\0') {
-        destination[i] = source[i];
-        i++;
-    }
-    destination[i] = '\0'; // Add null terminator to the destination string
+int _strlen(char *string)
+{
+int len = 0;
+if (string == NULL)
+return (len);
+for (; string[len] != '\0'; len++);
+return (len);
 }
-
-/**
- * getStringLength - Computes the length of a string.
- * @string: The input string.
- *
- * Return: The length of the string.
- */
-int getStringLength(char *string) {
-    int length = 0;
-    if (string == NULL)
-        return length;
-
-    while (string[length] != '\0') {
-        length++;
-    }
-    return length;
-}
-
