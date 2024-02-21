@@ -1,15 +1,6 @@
 #include "shell.h"
 
 /**
- * Auth: Constance Grace Githinji
- * 		Boniface Ouma
- *
- * Description:
- * the extended functions for main.c
- */
-
-
-/**
  * parse_command - determines the type of the command
  * @command: command to be parsed
  *
